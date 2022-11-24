@@ -2,23 +2,43 @@ const express = require("express");
 const router = express.Router();
 const knex = require("../knexConfig.js");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 router.post("/register", async (req, res) => {
     const { name, email, phone, address, password } = req.body;
 
-    // TODO: Pretend we validated the information
-    // TODO: make sure email is unique!
+    // Validate form inputs
+    if (
+        !name ||
+        !email ||
+        !phone ||
+        !address ||
+        !password
+    ) {
+        return res.status(400).json({
+            message: "All fields are required."
+        })
+    }
     
     try {
+        // TODO: make sure email is unique!
+        const users = await knex("users")
+            .where({ email: email });
+        
+        if (users.length !== 0) {
+            return res.status(400).json({
+                message: "User already exists"
+            })
+        }
+
         // Form is valid, save user info to Database?
-        // TODO: hashPassword using bcrypt -> bcrypt.hash(password)
         const newUserIds = await knex("users")
             .insert({
                 name: name,
                 email: email,
                 phone: phone,
                 address: address,
-                password: password
+                password: bcrypt.hashSync(password, 10) // hash password
             });
         
         // Responds with new user (201 Created)
@@ -56,7 +76,7 @@ router.post("/login", async (req, res) => {
     const user = users[0];
 
     // TODO: use bcrypt again -> bcrypt.compare(req.body.password, user.password)
-    if (user.password !== req.body.password) {
+    if (!bcrypt.compareSync(req.body.password, user.password)) {
         // If invalid: Respond with Invalid Credentials (401)
         return res.status(401).json({
             message: "Invalid Credentials"
@@ -71,15 +91,11 @@ router.post("/login", async (req, res) => {
     })
 });
 
+/**
+ *  See the specific user information of the user that is logged in
+ */
 router.get("/profile", (req, res) => {
-
-    /*
-    - GOAL: See the specific user information of the user that is logged in
-        - Include JWT in Authorization header!
-    */
-
-    // req.headers.authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJpYXQiOjE2NjkzMjAwMjR9.7U9ShrAHCI2j4aLjdqpLI2870Nkmt6SJQ4lN29h5CNU"
-
+    // req.headers.authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI..."
     if (!req.headers.authorization) {
         return res.status(400).json({
             message: "Bearer token required"
