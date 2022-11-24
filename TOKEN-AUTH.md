@@ -27,3 +27,29 @@ What does the client do with the JWT?
 
 
 Server-Side Auth
+
+
+POST /api/users/register
+- Save profile information to database
+    - Responds with new user (201 Created)
+
+POST /api/users/login
+- Validate user credentials
+    - If valid: Generate the JWT, Respond with JWT (200)
+    - If invalid: Respond with Invalid Credentials (401)
+
+
+
+GET /api/users/profile
+- GOAL: See the specific user information of the user that is logged in
+- Include JWT in Authorization header!
+- Verify the JWT
+    - if not valid -> send an error response back (401)
+
+- if valid JWT
+    - in JWT payload -> grab the user id
+    - using that user id -> get profile information for that user! (200)
+
+
+Generating a random secret key in terminal
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
