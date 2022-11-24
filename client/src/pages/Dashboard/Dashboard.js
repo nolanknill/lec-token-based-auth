@@ -64,13 +64,13 @@ const Dashboard = () => {
     )
   }
 
-  const { first_name, last_name, email, phone, address } = user;
+  const { name, email, phone, address } = user;
 
   return (
     <main className="dashboard">
       <h1 className="dashboard__title">Dashboard</h1>
       <p>
-        Welcome back, {first_name} {last_name}! 👋
+        Welcome back, {name}! 👋
       </p>
       <h2>My Profile</h2>
       <p>Email: {email}</p>
