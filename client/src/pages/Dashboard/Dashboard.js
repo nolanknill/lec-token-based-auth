@@ -20,7 +20,7 @@ const Dashboard = () => {
   // if there is an error from the endpoint (ie: token invalid, expired, tampered with)
   useEffect(() => {
     axios
-      .get('http://localhost:8080/api/users/current', {
+      .get('http://localhost:8080/api/users/profile', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
