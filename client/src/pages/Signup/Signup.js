@@ -25,7 +25,7 @@ const Signup = () => {
         event.target.reset();
       })
       .catch((error) => {
-        setError(error.response.data);
+        setError(error.response.data.message);
       });
   }
 
